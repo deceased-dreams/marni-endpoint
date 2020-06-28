@@ -1,0 +1,119 @@
+extends base.pug
+
+block content
+  .row
+    .col-sm-6.col-lg-3
+      .card.text-white.bg-primary
+        .card-body.pb-0
+          .btn-group.float-right
+            button.btn.btn-transparent.dropdown-toggle.p-0(type='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+              i.icon-settings
+            .dropdown-menu.dropdown-menu-right
+              a.dropdown-item(href='#') Action
+              a.dropdown-item(href='#') Another action
+              a.dropdown-item(href='#') Something else here
+          .text-value 9.823
+          div Members online
+        .chart-wrapper.mt-3.mx-3(style='height:70px;')
+          canvas.chart#card-chart1(height='70')
+    //  /.col
+    .col-sm-6.col-lg-3
+      .card.text-white.bg-info
+        .card-body.pb-0
+          button.btn.btn-transparent.p-0.float-right(type='button')
+            i.icon-location-pin
+          .text-value 9.823
+          div Members online
+        .chart-wrapper.mt-3.mx-3(style='height:70px;')
+          canvas.chart#card-chart2(height='70')
+    //  /.col
+    .col-sm-6.col-lg-3
+      .card.text-white.bg-warning
+        .card-body.pb-0
+          .btn-group.float-right
+            button.btn.btn-transparent.dropdown-toggle.p-0(type='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+              i.icon-settings
+            .dropdown-menu.dropdown-menu-right
+              a.dropdown-item(href='#') Action
+              a.dropdown-item(href='#') Another action
+              a.dropdown-item(href='#') Something else here
+          .text-value 9.823
+          div Members online
+        .chart-wrapper.mt-3(style='height:70px;')
+          canvas.chart#card-chart3(height='70')
+    //  /.col
+    .col-sm-6.col-lg-3
+      .card.text-white.bg-danger
+        .card-body.pb-0
+          .btn-group.float-right
+            button.btn.btn-transparent.dropdown-toggle.p-0(type='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+              i.icon-settings
+            .dropdown-menu.dropdown-menu-right
+              a.dropdown-item(href='#') Action
+              a.dropdown-item(href='#') Another action
+              a.dropdown-item(href='#') Something else here
+          .text-value 9.823
+          div Members online
+        .chart-wrapper.mt-3.mx-3(style='height:70px;')
+          canvas.chart#card-chart4(height='70')
+    //  /.col
+  //  /.row
+  .card
+    .card-body
+      .row
+        .col-sm-5
+          h4.card-title.mb-0 Traffic
+          .small.text-muted November 2017
+        //  /.col
+        .col-sm-7.d-none.d-md-block
+          button.btn.btn-primary.float-right(type='button')
+            i.icon-cloud-download
+          .btn-group.btn-group-toggle.float-right.mr-3(data-toggle='buttons')
+            label.btn.btn-outline-secondary
+              input#option1(type='radio' name='options' autocomplete='off')
+              |  Day
+
+            label.btn.btn-outline-secondary.active
+              input#option2(type='radio' name='options' autocomplete='off' checked)
+              |  Month
+
+            label.btn.btn-outline-secondary
+              input#option3(type='radio' name='options' autocomplete='off')
+              |  Year
+
+        //  /.col
+      //  /.row
+      .chart-wrapper(style='height:300px;margin-top:40px;')
+        canvas.chart#main-chart(height='300')
+    .card-footer
+      .row.text-center
+        .col-sm-12.col-md.mb-sm-2.mb-0
+          .text-muted Visits
+          strong 29.703 Users (40%)
+          .progress.progress-xs.mt-2
+            .progress-bar.bg-success(role='progressbar' style='width: 40%' aria-valuenow='40' aria-valuemin='0' aria-valuemax='100')
+        .col-sm-12.col-md.mb-sm-2.mb-0
+          .text-muted Unique
+          strong 24.093 Users (20%)
+          .progress.progress-xs.mt-2
+            .progress-bar.bg-info(role='progressbar' style='width: 20%' aria-valuenow='20' aria-valuemin='0' aria-valuemax='100')
+        .col-sm-12.col-md.mb-sm-2.mb-0
+          .text-muted Pageviews
+          strong 78.706 Views (60%)
+          .progress.progress-xs.mt-2
+            .progress-bar.bg-warning(role='progressbar' style='width: 60%' aria-valuenow='60' aria-valuemin='0' aria-valuemax='100')
+        .col-sm-12.col-md.mb-sm-2.mb-0
+          .text-muted New Users
+          strong 22.123 Users (80%)
+          .progress.progress-xs.mt-2
+            .progress-bar.bg-danger(role='progressbar' style='width: 80%' aria-valuenow='80' aria-valuemin='0' aria-valuemax='100')
+        .col-sm-12.col-md.mb-sm-2.mb-0
+          .text-muted Bounce Rate
+          strong 40.15%
+          .progress.progress-xs.mt-2
+            .progress-bar(role='progressbar' style='width: 40%' aria-valuenow='40' aria-valuemin='0' aria-valuemax='100')
+
+block customScripts
+  script(src='/app/vendors/chart.js/js/Chart.min.js')
+  script(src='/app/vendors/@coreui/coreui-plugin-chartjs-custom-tooltips/js/custom-tooltips.min.js')
+  script(src='/app/js/main.js')

@@ -1,0 +1,33 @@
+extends ../base.pug
+
+block content
+  .row
+    .col-md-8
+      div.display-4 Data Bobot
+      .dropdown-divider.my-4
+      .card
+        .card-body
+          table.table.table-responsive-sm
+            thead
+              tr
+                th ID
+                th Nama
+                th Umur
+                th Berat Badan
+                th Tinggi Badan
+                th Jenis Kelamin
+                th
+                
+            tbody
+              each balita in items
+                tr
+                  td #{balita.id}
+                  td #{balita.nama}
+                  td #{balita.age} tahun
+                  td #{balita.beratBadan} kg
+                  td #{balita.tinggiBadan} cm
+                  td #{balita.sex == 'LAKI_LAKI' ? 'Laki - Laki' : 'Perempuan'}
+                  td
+                    .btn-group(role='group' aria-label='Basic example')
+                      a.btn.btn-sm.btn-primary(href='/app/data/edit/' + balita.id) Edit
+                      a.btn.btn-sm.btn-danger(href='/app/data/delete/' + balita.id) Hapus

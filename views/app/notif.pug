@@ -1,0 +1,10 @@
+extends base.pug
+
+block content
+  .row
+    .col-sm-6
+      .alert(role='alert' class="alert-primary")
+        h4 #{message}
+      .alert.alert-secondary(role='alert')
+        h5
+          a(href=link) #{link}

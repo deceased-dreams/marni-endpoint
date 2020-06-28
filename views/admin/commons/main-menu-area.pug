@@ -1,0 +1,27 @@
+mixin main_menu(active_class)
+  .main-menu-area.mg-tb-40
+    .container
+      .row
+        .col-lg-12.col-md-12.col-sm-12.col-xs-12
+          ul.nav.nav-tabs.notika-menu-wrap.menu-it-icon-pro
+            li(class= active_class == 'home' ? 'active' : '')
+              a(data-toggle='tab' href='/admin/')
+                i.notika-icon.notika-house
+                |  Home
+            li(class= active_class == 'kriteria' ? 'active' : '')
+              a(data-toggle='tab' href='/admin/kriteria')
+                i.notika-icon.notika-mail
+                |  Kriteria
+            li(class= active_class == 'alternatif' ? 'active' : '')
+              a(data-toggle='tab' href='/admin/alternatif')
+                i.notika-icon.notika-edit
+                |  Alternatif
+            li(class= active_class == 'perangkingan' ? 'active' : '')
+              a(data-toggle='tab' href='/admin/perangkingan')
+                i.notika-icon.notika-bar-chart
+                |  Perangkingan
+            li(class= active_class == 'laporan' ? 'active' : '')
+              a(data-toggle='tab' href='/admin/laporan')
+                i.notika-icon.notika-windows
+                | Laporan
+    

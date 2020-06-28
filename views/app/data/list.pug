@@ -1,0 +1,34 @@
+extends ../base.pug
+
+block content
+  .row
+    .col-md-12
+      div.display-4 Data Balita
+      h3.py-4 Total data #{items.length}
+        a.btn.btn-lg.btn-primary.ml-4(href="/app/data/add") Tambah
+      .card
+        .card-body
+          table.table.table-responsive-sm
+            thead
+              tr
+                th ID
+                th Nama
+                th Umur
+                th Berat Badan
+                th Tinggi Badan
+                th Jenis Kelamin
+                th
+                
+            tbody
+              each balita in items
+                tr
+                  td #{balita.id}
+                  td #{balita.nama}
+                  td #{balita.age} tahun
+                  td #{balita.beratBadan} kg
+                  td #{balita.tinggiBadan} cm
+                  td #{balita.sex == 'LAKI_LAKI' ? 'Laki - Laki' : 'Perempuan'}
+                  td
+                    .btn-group(role='group' aria-label='Basic example')
+                      a.btn.btn-sm.btn-primary(href='/app/data/edit/' + balita.id) Edit
+                      a.btn.btn-sm.btn-danger(href='/app/data/delete/' + balita.id) Hapus

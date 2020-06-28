@@ -1,0 +1,32 @@
+extends ../base.pug
+
+block content
+  .row
+    .col-md-12
+      div.display-4 Hasil Perangkingan
+      h3.py-4 Total data 12
+        a.btn.btn-lg.btn-primary.ml-4(href="/app/rank/form") Ulangi
+      .card
+        .card-body
+          table.table.table-responsive-sm
+            thead
+              tr
+                th ID
+                th Nama
+                th Umur
+                th Berat Badan
+                th Tinggi Badan
+                th Jenis Kelamin
+                th V
+                
+            tbody
+              each balita in items
+                tr
+                  td
+                    a(href="/app/data/edit/" + balita.id) #{balita.id}
+                  td #{balita.nama}
+                  td #{balita.age} tahun
+                  td #{balita.beratBadan} kg
+                  td #{balita.tinggiBadan} cm
+                  td #{balita.sex == 'LAKI_LAKI' ? 'Laki - Laki' : 'Perempuan'}
+                  td #{balita.v.toFixed(4)}

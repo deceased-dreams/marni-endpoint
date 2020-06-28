@@ -1,0 +1,4 @@
+export enum Sex {
+  LAKI_LAKI="LAKI_LAKI",
+  PEREMPUAN="PEREMPUAN"
+}
