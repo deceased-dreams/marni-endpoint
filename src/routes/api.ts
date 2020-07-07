@@ -1,26 +1,28 @@
-import { writeFileSync }  from 'fs';
+import { writeFileSync } from 'fs';
 import * as bodyParser from 'body-parser';
 import { Request, Response, Express } from "express";
 import { age as calcAge, htmlDate } from "../util";
 import { Sex } from "../entity/Sex";
 import { StatusGizi } from "../entity/StatusGizi";
 import { DataBalita } from "../entity/DataBalita";
-import { lookupCategory, fuzz, Row } from "../fuzzy";
+import { lookupCategory, fuzz, Row, BB_TB_MAP, INF } from "../fuzzy";
 import * as moment from 'moment';
+import { Kriteria } from 'marni/entity/Kriteria';
+import { SubKriteria } from 'marni/entity/SubKriteria';
 
 const carbone = require('carbone');
 const ID_LENGTH = 5;
-const TEMPLATE_PATH = './templates/reports'; 
-const OUTPUT_PATH = './generated/reports'; 
+const TEMPLATE_PATH = './templates/reports';
+const OUTPUT_PATH = './generated/reports';
 const TEMPLATE_FILE_PATH = `${TEMPLATE_PATH}/ranks.docx`;
 const TEMPLATE_2_FILE_PATH = `${TEMPLATE_PATH}/ranks-perangkingan.docx`;
 
 function monthDiff(d1, d2) {
-    var months;
-    months = (d2.getFullYear() - d1.getFullYear()) * 12;
-    months -= d1.getMonth() + 1;
-    months += d2.getMonth();
-    return months <= 0 ? 0 : months;
+  var months;
+  months = (d2.getFullYear() - d1.getFullYear()) * 12;
+  months -= d1.getMonth() + 1;
+  months += d2.getMonth();
+  return months <= 0 ? 0 : months;
 }
 
 export default (app: Express) => {
@@ -101,7 +103,9 @@ export default (app: Express) => {
     const withVs = withAge.map((it, idx) => {
       return {
         ...it,
-        v: result[idx]
+        v: result[idx].v,
+        fuzz: result[idx].fuzz,
+        norm: result[idx].norm
       }
     });
 
@@ -130,7 +134,7 @@ export default (app: Express) => {
     };
 
     const prom = new Promise<string>((resolve, reject) => {
-      carbone.render(TEMPLATE_FILE_PATH, dataToPrint, function(err, result) {
+      carbone.render(TEMPLATE_FILE_PATH, dataToPrint, function (err, result) {
         if (err) {
           console.log(err);
           reject(err);
@@ -191,14 +195,14 @@ export default (app: Express) => {
       return {
         ...it,
         sex: it.sex == 'PEREMPUAN' ? 'Perempuan' : 'Laki - Laki',
-        v: result[idx].toFixed(3),
+        v: result[idx].v.toFixed(3),
         bb: 'gizi ' + bb_result[idx].toLowerCase(),
         vFormatted: ((v) => {
           if (v < 0.6) return 'Gizi Buruk';
           if (v > 0.6 && v < 0.699) return 'Gizi Kurang';
           if (v > 0.7 && v < 0.799) return 'Gizi Sedang';
           if (v > 0.8) return 'Gizi Baik';
-        })(result[idx])
+        })(result[idx].v)
       }
     });
     const dataToPrint = {
@@ -208,7 +212,7 @@ export default (app: Express) => {
       total: withVs.length
     };
     const prom = new Promise<string>((resolve, reject) => {
-      carbone.render(TEMPLATE_2_FILE_PATH, dataToPrint, function(err, result) {
+      carbone.render(TEMPLATE_2_FILE_PATH, dataToPrint, function (err, result) {
         if (err) {
           console.log(err);
           reject(err);
@@ -264,6 +268,166 @@ export default (app: Express) => {
       return row.statusGizi(bb);
     }));
     resp.send(result);
+  });
+
+  app.post("/api/kriteria", bodyParser.json(), async (req, resp) => {
+    const kriterias = req.db.conn.getRepository<Kriteria>(Kriteria);
+    let kriteria = kriterias.create(req.body as Partial<Kriteria>);
+    await kriterias.save(kriteria);
+    resp.send(kriteria);
+  });
+
+  app.delete('/api/kriteria/:id', async (req, res) => {
+    const kriterias = req.db.conn.getRepository<Kriteria>(Kriteria);
+    await kriterias.delete(req.params.id);
+    res.send('ok');
+  });
+
+  app.get('/api/kriteria', async (req, resp) => {
+    const kriterias = req.db.conn.getRepository<Kriteria>(Kriteria);
+    const items = await kriterias.find();
+    resp.send(items);
+  });
+
+  app.get('/api/kriteria/:id', async (req, resp) => {
+    const kriterias = req.db.conn.getRepository<Kriteria>(Kriteria);
+    const item = await kriterias.findOne(req.params.id);
+    resp.send(item);
+  });
+
+  app.post('/api/kriteria/:id/subs', bodyParser.json(), async (req, resp) => {
+    const subs = req.db.conn.getRepository<SubKriteria>(SubKriteria);
+    const idKriteria = req.params.id;
+    let sub = subs.create({ ...req.body, idKriteria } as Partial<SubKriteria>);
+    await subs.save(sub);
+    resp.send(sub);
+  });
+
+  app.get('/api/kriteria/:id/subs', async (req, resp) => {
+    const subs = req.db.conn.getRepository<SubKriteria>(SubKriteria);
+    const items = await subs.find({
+      idKriteria: parseInt(req.params.id)
+    })
+    resp.send(items);
+  });
+
+  app.delete('/api/subs/:id', async (req, resp) => {
+    const subs = req.db.conn.getRepository<SubKriteria>(SubKriteria);
+    await subs.delete(parseInt(req.params.id));
+    resp.send('ok');
+  });
+
+  app.get('/api/sub-kriteria/:id', async (req, resp) => {
+    const subs = req.db.conn.getRepository<SubKriteria>(SubKriteria);
+    const sub = await subs.findOne(req.params.id);
+    resp.send(sub);
+  });
+
+  app.put('/api/sub-kriteria/:id', bodyParser.json(), async (req, resp) => {
+    const subs = req.db.conn.getRepository<SubKriteria>(SubKriteria);
+    const { id, ...payload } = req.body;
+    const sub = await subs.findOne(req.params.id);
+    resp.send(sub);
+  });
+
+  app.get('/api/priors', async (req, resp) => {
+    const priors = [
+      { 
+        idx: 3,
+        c: 'Umur'
+      }, 
+      {
+        c: 'Berat Badan',
+        idx: 4
+      }, 
+      {
+        idx: 4,
+        c: 'Tinggi Badan'
+      }, 
+      {
+        idx: 3,
+        c: 'Jenis Kelamin'
+      }];
+    const weights = [
+      [0, 0, 0.25],
+      [0, 0.25, 0.5],
+      [0.25, 0.5, 0.75],
+      [0.5, 0.75, 1.0],
+      [0.75, 1.0, 1.0]
+    ];
+    let result = priors
+      .map(p => {
+        return {
+          c: p.c,
+          w: weights[p.idx],
+          defuzz: weights[p.idx].reduce((a, b) => a + b, 0) / 3.0
+        }
+      });
+    const sumDefuzz = result
+      .map(r => r.defuzz)
+      .reduce((a, b) => a + b, 0);
+    result = result.map(r => {
+      return {
+        ...r,
+        norm: r.defuzz / sumDefuzz
+      }
+    })
+    resp.send(result);
+  });
+
+  app.get('/api/who/bb_median/:type', async (req, resp) => {
+    const type = req.params.type;
+    const filter = {
+      sex: type == 'men' ? 'LAKI_LAKI' : 'PEREMPUAN'
+    };
+    const items = await req.db.repoBB.find(filter as any);
+    resp.send(items);
+  });
+
+  app.get('/api/who/bobot_sg', async (req, resp) => {
+    console.log(req.query);
+    const { query } = req;
+    const { mode, umur } = query as any;
+    const age = parseInt(umur);
+
+    const start_row_idx = age * 5;
+    let results = [] as any[];
+    for (let i = 0; i < 5; i++) {
+      const row = BB_TB_MAP[start_row_idx + i]
+      // if it's bb 
+      const result = mode == 'berat' 
+        ? row.filter((v, idx) => idx >= 4)
+        : row.filter((v, idx) => idx < 4);
+      let label = null;
+      if (mode == 'tinggi') {
+        if (i == 0) { label = 'Sangat Pendek' }
+        else if (i == 1) { label = 'Pendek' }
+        else if (i == 2) { label = 'Normal' }
+        else if (i == 3) { label = 'Tinggi' }
+        else if (i == 4) { label = 'Sangat Tinggi' }
+      } else {
+        if (i == 0) { label = 'Sangat Ringan' }
+        else if (i == 1) { label = 'Ringan' }
+        else if (i == 2) { label = 'Normal' }
+        else if (i == 3) { label = 'Berat' }
+        else if (i == 4) { label = 'Sangat Berat' }
+      }
+      // 0, 1 = woman
+      // 2, 3 = man
+      const woman_low = result[0]
+      const woman_upper = result[1] != INF ? result[1] : null
+      const man_low = result[2]
+      const man_upper = result[3] != INF ? result[3] : null
+      const labeled = {
+        label,
+        woman_low,
+        woman_upper,
+        man_low,
+        man_upper
+      };
+      results.push(labeled);
+    }
+    resp.send(results);
   });
 
 }

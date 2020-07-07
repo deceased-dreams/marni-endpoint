@@ -1,8 +1,14 @@
-const DIM = 5;
-const INF = 10000000;
-const BB_TB_MAP = [
+export const DIM = 5;
+export const INF = 10000000;
+export const BB_TB_MAP = [
 //  P         P         L         L         P         P         L       L
 //  Low,      Upper     Low,      Upper     Low,      Upper     Low,    Upper
+
+    [0,       49,       0,        50,       0,        1.2,      0,      1.3],
+    [50,      66.7,     50,       69,       1.2,      2.5,      1.3,    2.5],
+    [66.7,    78.1,     69,       79.5,     2.5,      3.5,      2.5,    3.9],
+    [78.1,    80.5,     79.5,     81.8,     3.5,      4,        3.9  ,   45],
+    [80.5,    INF,      81.8,     INF,      4,       INF,       5,     INF],
 
     [0,       50,       0,        52,       0,        3.8,      0,      3.9],
     [50,      67.8,     52,       70,       3.8,      6,        3.9,    7.6],
@@ -94,7 +100,7 @@ export function lookupCategory(type: 'bb'|'tb', age: number, sex: number, x: num
 }
 
 export function lookup(type: 'bb'|'tb', age: number, sex: number, x: number): number {
-  const start_row_idx = (age - 1) * 5;
+  const start_row_idx = age * 5;
   let flip_sex = 1 - sex;
   // If it's bb, offset the column by 4.
   let col_idx_low = type == 'bb' ? (flip_sex * 2) + 4 : (flip_sex * 2);
@@ -113,22 +119,13 @@ export function lookup(type: 'bb'|'tb', age: number, sex: number, x: number): nu
 }
 
 export function fuzz(rows: Row[], priors: number[]) {
-  console.log('here');
-  console.log(rows);
   const defuzzWs = priors
     .map(idx => weightsOut[idx])
     .map(ws => ws.reduce(sum, 0))
     .map(totalW => totalW / 3.0);
 
-  console.log(`defuzzWs: ${defuzzWs}`);
-
   const totalWs = defuzzWs.reduce(sum, 0.0);
   const normWs = defuzzWs.map(fw => fw / totalWs);
-
-  console.log(`nowmWs: ${normWs}`);
-
-  console.log('bb rianti');
-  console.log(lookup('bb', rows[1][0], rows[1][3], rows[1][1]));
 
   const fuzzRows = rows.map(row => {
     const umur = umur_fuzz(row[0]);
@@ -140,7 +137,6 @@ export function fuzz(rows: Row[], priors: number[]) {
 
   let minInFuzz: number[] = [INF, INF, INF, INF];
   fuzzRows.forEach((row, ridx) => {
-    console.log(`row[${ridx}] = ${row}`);
     row.forEach((x, idx) => {
       if (x < minInFuzz[idx]) {
         minInFuzz[idx] = x;
@@ -155,16 +151,24 @@ export function fuzz(rows: Row[], priors: number[]) {
     });
   });
 
-  console.log();
-  normFuzz.forEach((row, idx) => {
-    console.log(`norm row[${idx}] = ${row}`);
-  });
-
   const vs = normFuzz.map(row => 
     row
       .map((x, idx) => x * normWs[idx])
       .reduce(sum)
   );
 
-  return vs;
+  const result = vs.map((v, idx) => {
+    return {
+      v: v,
+      fuzz: fuzzRows[idx],
+      norm: normFuzz[idx]
+    }
+  });
+
+  return result;
 }
+
+export function WHODescription () {
+
+}
+

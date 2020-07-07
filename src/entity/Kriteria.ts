@@ -1,8 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { SubKriteria } from "./SubKriteria";
 
 export enum KriteriaType {
   Categorial = 'categorial',
   Numeric = 'numeric'
+}
+
+export enum FunctionType {
+  umur_f = 'umur_f',
+  bb_lookup = 'bb_lookup',
+  tb_lookup = 'tb_lookup'
 }
 
 @Entity()
@@ -12,6 +19,9 @@ export class Kriteria {
 
   @Column()
   label: string;
+
+  @Column()
+  kode: string;
 
   @Column({ type: 'float' })
   weight_a: number;
@@ -27,4 +37,10 @@ export class Kriteria {
     enum: KriteriaType
   })
   type_kriteria: KriteriaType;
+
+  @OneToMany(type => SubKriteria, sub => sub.kriteria)
+  subs: SubKriteria[];
+
+  @Column({ type: 'varchar', length: 250 })
+  defaultValue: any;
 }

@@ -12,7 +12,7 @@ export class DataBalita {
   @Column({ nullable: false })
   tanggalLahir: Date;
 
-  @Column('float',{ nullable: false })
+  @Column('float', { nullable: false })
   tinggiBadan: number;
 
   @Column('float', { nullable: false })

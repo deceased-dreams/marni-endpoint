@@ -2,40 +2,59 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "t
 import { Kriteria } from "./Kriteria";
 
 export enum SubKriteriaSign {
-    Lower = 'lower',
-    LowerEqual = 'lower-equal',
+    Lower = '<',
+    LowerEqual = '<=',
     Unbounded = 'unbounded'
 }
 
 @Entity()
 export class SubKriteria {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  idKriteria: number;
+    @Column()
+    idKriteria: number;
 
-  @ManyToOne(type => Kriteria)
-  @JoinColumn({
-      name: 'idKriteria'
-  })
-  kriteria: Kriteria;
+    @ManyToOne(type => Kriteria, kriteria => kriteria.subs, {
+        onDelete: 'CASCADE'
+    })
+    @JoinColumn({
+        name: 'idKriteria'
+    })
+    kriteria: Kriteria;
 
-  @Column()
-  label: string;
+    @Column()
+    label: string;
 
-  @Column('float')
-  cat_value: number;
+    @Column()
+    kode: string;
 
-  @Column('float')
-  range_min: number;
+    @Column('float', { nullable: true })
+    range_min: number;
 
-  @Column('float')
-  range_max: number;
+    @Column('float', { nullable: true })
+    range_max: number;
 
-  @Column({
-      type: 'enum',
-      enum: SubKriteriaSign
-  })
-  range_sign: SubKriteriaSign
+    @Column({ type: 'float' })
+    weight_a: number;
+
+    @Column({ type: 'float' })
+    weight_b: number;
+
+    @Column({ type: 'float' })
+    weight_c: number;
+
+    @Column({
+        type: 'enum',
+        enum: SubKriteriaSign,
+        nullable: true
+    })
+    range_upper_sign: SubKriteriaSign
+
+    @Column({
+        type: 'enum',
+        enum: SubKriteriaSign,
+        nullable: true
+    })
+    range_lower_sign: SubKriteriaSign
 }

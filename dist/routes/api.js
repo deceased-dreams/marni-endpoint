@@ -25,6 +25,8 @@ const util_1 = require("../util");
 const Sex_1 = require("../entity/Sex");
 const fuzzy_1 = require("../fuzzy");
 const moment = require("moment");
+const Kriteria_1 = require("marni/entity/Kriteria");
+const SubKriteria_1 = require("marni/entity/SubKriteria");
 const carbone = require('carbone');
 const ID_LENGTH = 5;
 const TEMPLATE_PATH = './templates/reports';
@@ -233,6 +235,46 @@ exports.default = (app) => {
             return row.statusGizi(bb);
         })));
         resp.send(result);
+    }));
+    app.post("/api/kriteria", bodyParser.json(), (req, resp) => __awaiter(this, void 0, void 0, function* () {
+        const kriterias = req.db.conn.getRepository(Kriteria_1.Kriteria);
+        let kriteria = kriterias.create(req.body);
+        yield kriterias.save(kriteria);
+        resp.send(kriteria);
+    }));
+    app.delete('/api/kriteria/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
+        const kriterias = req.db.conn.getRepository(Kriteria_1.Kriteria);
+        yield kriterias.delete(req.params.id);
+        res.send('ok');
+    }));
+    app.get('/api/kriteria', (req, resp) => __awaiter(this, void 0, void 0, function* () {
+        const kriterias = req.db.conn.getRepository(Kriteria_1.Kriteria);
+        const items = yield kriterias.find();
+        resp.send(items);
+    }));
+    app.get('/api/kriteria/:id', (req, resp) => __awaiter(this, void 0, void 0, function* () {
+        const kriterias = req.db.conn.getRepository(Kriteria_1.Kriteria);
+        const item = yield kriterias.findOne(req.params.id);
+        resp.send(item);
+    }));
+    app.post('/api/kriteria/:id/subs', bodyParser.json(), (req, resp) => __awaiter(this, void 0, void 0, function* () {
+        const subs = req.db.conn.getRepository(SubKriteria_1.SubKriteria);
+        const idKriteria = req.params.id;
+        let sub = subs.create(Object.assign({}, req.body, { idKriteria }));
+        yield subs.save(sub);
+        resp.send(sub);
+    }));
+    app.get('/api/kriteria/:id/subs', (req, resp) => __awaiter(this, void 0, void 0, function* () {
+        const subs = req.db.conn.getRepository(SubKriteria_1.SubKriteria);
+        const items = yield subs.find({
+            idKriteria: parseInt(req.params.id)
+        });
+        resp.send(items);
+    }));
+    app.delete('/api/subs/:id', (req, resp) => __awaiter(this, void 0, void 0, function* () {
+        const subs = req.db.conn.getRepository(SubKriteria_1.SubKriteria);
+        yield subs.delete(parseInt(req.params.id));
+        resp.send('ok');
     }));
 };
 //# sourceMappingURL=api.js.map

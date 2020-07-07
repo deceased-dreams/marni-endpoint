@@ -10,11 +10,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
+const SubKriteria_1 = require("./SubKriteria");
 var KriteriaType;
 (function (KriteriaType) {
     KriteriaType["Categorial"] = "categorial";
     KriteriaType["Numeric"] = "numeric";
 })(KriteriaType = exports.KriteriaType || (exports.KriteriaType = {}));
+var FunctionType;
+(function (FunctionType) {
+    FunctionType["umur_f"] = "umur_f";
+    FunctionType["bb_lookup"] = "bb_lookup";
+    FunctionType["tb_lookup"] = "tb_lookup";
+})(FunctionType = exports.FunctionType || (exports.FunctionType = {}));
 let Kriteria = class Kriteria {
 };
 __decorate([
@@ -25,6 +32,10 @@ __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], Kriteria.prototype, "label", void 0);
+__decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", String)
+], Kriteria.prototype, "kode", void 0);
 __decorate([
     typeorm_1.Column({ type: 'float' }),
     __metadata("design:type", Number)
@@ -44,6 +55,14 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], Kriteria.prototype, "type_kriteria", void 0);
+__decorate([
+    typeorm_1.OneToMany(type => SubKriteria_1.SubKriteria, sub => sub.kriteria),
+    __metadata("design:type", Array)
+], Kriteria.prototype, "subs", void 0);
+__decorate([
+    typeorm_1.Column({ type: 'varchar', length: 250 }),
+    __metadata("design:type", Object)
+], Kriteria.prototype, "defaultValue", void 0);
 Kriteria = __decorate([
     typeorm_1.Entity()
 ], Kriteria);

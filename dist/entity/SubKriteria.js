@@ -28,7 +28,9 @@ __decorate([
     __metadata("design:type", Number)
 ], SubKriteria.prototype, "idKriteria", void 0);
 __decorate([
-    typeorm_1.ManyToOne(type => Kriteria_1.Kriteria),
+    typeorm_1.ManyToOne(type => Kriteria_1.Kriteria, kriteria => kriteria.subs, {
+        onDelete: 'CASCADE'
+    }),
     typeorm_1.JoinColumn({
         name: 'idKriteria'
     }),
@@ -39,24 +41,45 @@ __decorate([
     __metadata("design:type", String)
 ], SubKriteria.prototype, "label", void 0);
 __decorate([
-    typeorm_1.Column('float'),
-    __metadata("design:type", Number)
-], SubKriteria.prototype, "cat_value", void 0);
+    typeorm_1.Column(),
+    __metadata("design:type", String)
+], SubKriteria.prototype, "kode", void 0);
 __decorate([
-    typeorm_1.Column('float'),
+    typeorm_1.Column('float', { nullable: true }),
     __metadata("design:type", Number)
 ], SubKriteria.prototype, "range_min", void 0);
 __decorate([
-    typeorm_1.Column('float'),
+    typeorm_1.Column('float', { nullable: true }),
     __metadata("design:type", Number)
 ], SubKriteria.prototype, "range_max", void 0);
 __decorate([
+    typeorm_1.Column({ type: 'float' }),
+    __metadata("design:type", Number)
+], SubKriteria.prototype, "weight_a", void 0);
+__decorate([
+    typeorm_1.Column({ type: 'float' }),
+    __metadata("design:type", Number)
+], SubKriteria.prototype, "weight_b", void 0);
+__decorate([
+    typeorm_1.Column({ type: 'float' }),
+    __metadata("design:type", Number)
+], SubKriteria.prototype, "weight_c", void 0);
+__decorate([
     typeorm_1.Column({
         type: 'enum',
-        enum: SubKriteriaSign
+        enum: SubKriteriaSign,
+        nullable: true
     }),
     __metadata("design:type", String)
-], SubKriteria.prototype, "range_sign", void 0);
+], SubKriteria.prototype, "range_upper_sign", void 0);
+__decorate([
+    typeorm_1.Column({
+        type: 'enum',
+        enum: SubKriteriaSign,
+        nullable: true
+    }),
+    __metadata("design:type", String)
+], SubKriteria.prototype, "range_lower_sign", void 0);
 SubKriteria = __decorate([
     typeorm_1.Entity()
 ], SubKriteria);
